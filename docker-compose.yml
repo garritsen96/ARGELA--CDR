@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Cdr
+      MYSQL_USER: demo
+      MYSQL_PASSWORD: demo
+      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3307:3306"
+    networks:
+      - demo-net
+
+  app:
+    build:
+      context: .
+    container_name: quarkus-app
+    depends_on:
+      - mysql
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://mysql:3306/Cdr
+      QUARKUS_DATASOURCE_USERNAME: demo
+      QUARKUS_DATASOURCE_PASSWORD: demo
+    ports:
+      - "8080:8080"
+    networks:
+      - demo-net
+
+networks:
+  demo-net:
+    driver: bridge
